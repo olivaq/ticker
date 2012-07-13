@@ -1,0 +1,157 @@
+<h1>{{node.title}}</h1>
+
+<script src="http://localhost/d3/d3.v2.min.js"></script>
+<script src="http://localhost/d3/jquery.min.js"></script>
+
+<div id="chart">
+
+</div>
+<div id="ajaxframe"></div>
+<script type="text/javascript">
+$(function()
+{
+
+    $("#ajaxframe form").live('submit', function(e){
+        e.preventDefault();
+        var form = this;
+        $.post(this.action, $(this).serialize(), function(data){
+            $("#ajaxframe").html(data);
+        });
+    });
+    
+    $("#ajaxframe a").not(".runner").live('click', function(e)
+    {
+        e.preventDefault();
+        $.get(this.href, function(data){
+            $("#ajaxframe").html(data);
+        });
+    });
+    
+    $("#ajaxframe a.runner").live('click', function(e)
+    {
+        e.preventDefault();
+        $.get(this.href);
+    });
+});
+var width = 400,
+    height = 500;
+
+var color = d3.scale.category20();
+
+var force = d3.layout.force()
+    .charge(-300)
+    .linkDistance(100)
+    .gravity(0)
+    .friction(0.7)
+    .size([width, height]);
+
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.json("{{node.id}}.json", function(json) {
+  var id_to_node = {}
+  for(var i in json.nodes)
+    id_to_node[json.nodes[i].id] = json.nodes[i];
+  
+  for(var i in json.links)
+  {
+    json.links[i].source = id_to_node[json.links[i].source]
+    json.links[i].target = id_to_node[json.links[i].target]
+  }
+  
+  force
+      .nodes(json.nodes)
+      .links(json.links)
+      .start();
+
+  var link = svg.selectAll("line.link")
+      .data(json.links)
+    .enter().append("line")
+      .attr("class", "link")
+      .style("stroke-width", function(d) { return 3; })
+      .on('click',
+        function(d){
+            $("#iframe").attr("src", 'http://localhost:8000/admin/ticker/link/' + d.id + '/');
+        });
+  
+  
+
+  var node = svg.selectAll("circle.node")
+      .data(json.nodes)
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", 10)
+      .style("fill", function(d) { return color(d.group); })
+    .on('click', 
+        function(d){
+            $.get('/node/' + d.id + '/edit', function(data){
+                $("#ajaxframe").html(data);
+            
+            });
+        });
+
+  node.append("title")
+      .text(function(d) { return d.title; });
+
+  force.on("tick", function(e) {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    //node.attr("y", function(d){ d.y += 0.00001});
+    
+    
+    function gravity(d)
+    {
+        if(json.top.indexOf(d.id) != -1)
+        {
+            return d.y = inRange(50  , height);
+        }
+        
+        return d.y = inRange(d.y + 9.81 * e.alpha, height);
+    }
+    node.attr("cx", function(d) { return d.x = inRange(d.x, width); })
+        .attr("cy", gravity); //function(d) { return d.y = inRange(d.y + 9.81 * e.alpha, height); });
+    
+  });
+      
+
+});
+
+function inRange(x, width)
+{
+    if(x < 0) return 0;
+    if(x > width) return width;
+    return x;
+}
+</script>
+<style type="text/css">
+circle.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+line.link {
+  stroke: black;
+  stroke-opacity: 1;
+}
+
+#ajaxframe
+{
+    position:absolute;
+    left:500px;
+    top:0px;
+    width:500px;
+}
+
+table.links td
+{
+    border:1px solid black;
+}
+
+table.links{
+    width:100%;
+}
+</style>

@@ -1,0 +1,32 @@
+<table class="links previous">
+<tr>
+{% for link in node.previous.all %}
+    <td><a href="/node/{{link.src.id}}/edit">{{link.src.title}}</a>
+    <ul>
+    {% for dump in link.dumps.all %}
+        <li><a href="/dump/{{dump.id}}/run">{{ dump.dump }}</a></li>
+    {% endfor %}
+    </ul>
+    
+    </td>
+{% endfor %}
+</tr>
+</table>
+
+<form class="ajaxify" action="/node/{{node.id}}/edit" method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Submit" />
+</form>
+
+<a class="runner" href="/node/{{node.id}}/run" method="post">Run</a>
+
+<table class="links next">
+<tr>
+{% for link in node.next.all %}
+    <td><a href="/node/{{link.dst.id}}/edit">{{link.dst.title}}</a></td>
+{% endfor %}
+</tr>
+</table>
+
+
