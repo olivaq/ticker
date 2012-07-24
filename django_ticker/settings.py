@@ -126,7 +126,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'ticker',
     'djcelery',
-    'djcelery.transport'
+    'djcelery.transport',
+    'south',
+    'icanhaz',
 )
 
 # A sample logging configuration. The only tangible logging

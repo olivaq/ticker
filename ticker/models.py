@@ -1,7 +1,8 @@
 from django.db import models
-
+from datetime import datetime
+from celery.result import AsyncResult
 # Create your models here.
-
+from pickle import loads
 class Node(models.Model):
     title = models.CharField(max_length=255)
     code = models.TextField()
@@ -19,4 +20,16 @@ class Link(models.Model):
 class LinkDump(models.Model):
     link = models.ForeignKey(Link, related_name="dumps")
     dump = models.TextField()
-    result = models.TextField()
+    
+    result_id = models.CharField(max_length=255, default="")
+    
+    created = models.DateTimeField(default=datetime.now)
+    rerun_of = models.ForeignKey("LinkDump", null=True,blank=True)
+    
+    def loads(self):
+	if self.rerun_of:
+		return self.rerun_of.loads()
+        return loads(self.dump.encode('ascii'))
+    
+    def result(self):
+        return AsyncResult(self.result_id)

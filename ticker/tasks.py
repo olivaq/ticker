@@ -10,13 +10,10 @@ config.enable('datetime')
 config.enable('math')
 config.enable('random')
 
-
-
-
 import re
 import pickle, os
 @task()
-def runcode(id, locals_dict={}, debug=False):
+def runcode(id, locals_dict={}, debug=False, follow_links=True):
     print locals_dict
     for k,v in locals_dict.items():
         print type(v)
@@ -46,12 +43,15 @@ def runcode(id, locals_dict={}, debug=False):
     
     if debug: return
     
-    for link in node.next.filter(enabled=True):
-        res = runcode.apply_async([link.dst.id], {"locals_dict":locals_dict})
-        if link.debug:
-            ld = LinkDump()
-            ld.link = link
-            ld.dump = pickle.dumps(locals_dict)
-            ld.save()
-            ld.result = res.id
+    if follow_links:
+        for link in node.next.filter(enabled=True):
+            res = runcode.apply_async([link.dst.id], {"locals_dict":locals_dict})
+            if link.debug:
+                ld = LinkDump()
+                ld.link = link
+                ld.dump = pickle.dumps(locals_dict)
+                ld.result_id = res.id
+                ld.save()
+    else:
+        print "Not following links"
     return locals_dict

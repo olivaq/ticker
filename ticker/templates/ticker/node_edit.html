@@ -1,10 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{STATIC_URL}}codemirror/lib/codemirror.css">
+<script src="{STATIC_URL}}codemirror/lib/codemirror.js"></script>
+<script src="{{STATIC_URL}}codemirror/mode/xml/xml.js"></script>
+
+
 <table class="links previous">
 <tr>
 {% for link in node.previous.all %}
     <td><a href="/node/{{link.src.id}}/edit">{{link.src.title}}</a>
     <ul>
-    {% for dump in link.dumps.all %}
-        <li><a href="/dump/{{dump.id}}/run">{{ dump.dump }}</a></li>
+    {% for dump in link.dumps.all|slice:":5" %}
+        <li class="dump {{dump.result.status|lower}}"><a href="/node/{{node.id}}/edit/focus/{{dump.id}}">{{ dump.created }} - {{dump.result.status|lower}}</a></li>
     {% endfor %}
     </ul>
     
@@ -13,6 +21,9 @@
 </tr>
 </table>
 
+{% if dump != None %}
+{% include 'ticker/dump_focus.html' %}
+{% endif %}
 <form class="ajaxify" action="/node/{{node.id}}/edit" method="post">
 {% csrf_token %}
 {{ form.as_p }}
@@ -29,4 +40,4 @@
 </tr>
 </table>
 
-
+{% endblock %}
