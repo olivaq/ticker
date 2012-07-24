@@ -11,27 +11,11 @@
 <script src="{{STATIC_URL}}jquery-ui-1.8.22.custom.min.js"></script>
 <link rel="stylesheet" href="{{STATIC_URL}}jquerycss/custom-theme/jquery-ui-1.8.22.custom.css">
 
-
-<table class="links previous">
-<tr>
-{% for link in node.previous.all %}
-    <td><a href="/node/{{link.src.id}}/edit">{{link.src.title}}</a>
-    <ul>
-    {% for dump in link.lastDumps|slice:":5" %}
-        <li class="dump {{dump.result.status|lower}}"><a href="/node/{{node.id}}/edit/focus/{{dump.id}}">{{ dump.created }} - {{dump.result.status|lower}}</a></li>
-    {% endfor %}
-    </ul>
-    
-    </td>
-{% endfor %}
-</tr>
-</table>
-
 <div id="tabs">
     <ul>
     {% for link in node.previous.all %}
     {% for dump in link.lastDumps|slice:":5" %}
-        <li><a href="/dump/{{dump.id}}/focus">{{dump.created}} - {{dump.result.status|lower}}</a></li>
+        <li class="{{dump.result.status|lower}}"><a href="/dump/{{dump.id}}/focus">{{dump.created|timesince}} ago</a></li>
     {% endfor %}
     {% endfor %}
     </ul>
@@ -43,10 +27,6 @@ $(function()
     $("#tabs").tabs()
 });
 </script>
-
-{% if dump != None %}
-{% include 'ticker/dump_focus.html' %}
-{% endif %}
 <form class="ajaxify" action="/node/{{node.id}}/edit" method="post">
 {% csrf_token %}
 {{ form.as_p }}
