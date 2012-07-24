@@ -1,9 +1,15 @@
 {% extends "base.html" %}
 
 {% block content %}
-<link rel="stylesheet" href="{STATIC_URL}}codemirror/lib/codemirror.css">
-<script src="{STATIC_URL}}codemirror/lib/codemirror.js"></script>
-<script src="{{STATIC_URL}}codemirror/mode/xml/xml.js"></script>
+<link rel="stylesheet" href="{{STATIC_URL}}codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="{{STATIC_URL}}codemirror/theme/night.css">
+<script src="{{STATIC_URL}}codemirror/lib/codemirror.js"></script>
+<script src="{{STATIC_URL}}codemirror/mode/python/python.js"></script>
+
+
+<script src="{{STATIC_URL}}jquery-1.7.2.min.js"></script>
+<script src="{{STATIC_URL}}jquery-ui-1.8.22.custom.min.js"></script>
+<link rel="stylesheet" href="{{STATIC_URL}}jquerycss/custom-theme/jquery-ui-1.8.22.custom.css">
 
 
 <table class="links previous">
@@ -11,7 +17,7 @@
 {% for link in node.previous.all %}
     <td><a href="/node/{{link.src.id}}/edit">{{link.src.title}}</a>
     <ul>
-    {% for dump in link.dumps.all|slice:":5" %}
+    {% for dump in link.lastDumps|slice:":5" %}
         <li class="dump {{dump.result.status|lower}}"><a href="/node/{{node.id}}/edit/focus/{{dump.id}}">{{ dump.created }} - {{dump.result.status|lower}}</a></li>
     {% endfor %}
     </ul>
@@ -21,6 +27,23 @@
 </tr>
 </table>
 
+<div id="tabs">
+    <ul>
+    {% for link in node.previous.all %}
+    {% for dump in link.lastDumps|slice:":5" %}
+        <li><a href="/dump/{{dump.id}}/focus">{{dump.created}} - {{dump.result.status|lower}}</a></li>
+    {% endfor %}
+    {% endfor %}
+    </ul>
+</div>
+
+<script type="text/javascript">
+$(function()
+{
+    $("#tabs").tabs()
+});
+</script>
+
 {% if dump != None %}
 {% include 'ticker/dump_focus.html' %}
 {% endif %}
@@ -29,7 +52,24 @@
 {{ form.as_p }}
 <input type="submit" value="Submit" />
 </form>
+<script type="text/javascript">
 
+var editor = CodeMirror.fromTextArea(document.getElementById("id_code"), {
+    mode: "python",
+    lineNumbers: true,
+    theme: 'night',
+    matchBrackets: true,
+    tabMode: "indent",
+    extraKeys: {
+        "F11": function(cm) {
+          setFullScreen(cm, !isFullScreen(cm));
+        },
+        "Esc": function(cm) {
+          if (isFullScreen(cm)) setFullScreen(cm, false);
+        }
+      }
+  });
+</script>
 <a class="runner" href="/node/{{node.id}}/run" method="post">Run</a>
 
 <table class="links next">

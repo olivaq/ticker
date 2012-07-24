@@ -1,9 +1,13 @@
 <table>
 <tr><td>{{dump.result.status|lower}}</td></tr>
-<tr><td>
-{% include "dicttable.html" with data=dump.loads %}
-</td></tr>
-<tr><td>{{dump.result.result}}</td></tr>
-
+<tr><td>{% include "dicttable.html" with data=dump.loads %}</td></tr>
+<tr><td>{% if dump.result.status|lower == 'success' %}
+{% include "dicttable.html" with data=dump.result.result %}
+{% elif dump.result.status|lower == 'failure' %}
+<pre>
+{{ dump.result.traceback }}
+</pre>
+{% endif %}</td></tr>
+{{dump.link_id}}
 <tr><td><a href="/dump/{{dump.id}}/run">Rerun</a></td></tr>
 </table>

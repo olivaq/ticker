@@ -92,12 +92,17 @@ def dump_run(request, dump_id):
     else:
         new.rerun_of = dump
     new.link = dump.link
-
+    
     res = runcode.apply_async((new.link.dst.id,), kwargs={'follow_links':False, 'locals_dict':data})
     new.result_id = res.id
     new.save()
     
     return redirect('/node/%d/edit/focus/%d'%(new.link.dst.id, new.id))
+
+def dump_focus(request, dump_id):
+    dump = models.LinkDump.objects.get(id = dump_id)
+    
+    return render_to_response('ticker/dump_focus.html', {'dump':dump})
 
 def dump_status(request, dump_id):
     dump = models.LinkDump.objects.get(id = dump_id)

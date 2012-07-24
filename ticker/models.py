@@ -3,6 +3,7 @@ from datetime import datetime
 from celery.result import AsyncResult
 # Create your models here.
 from pickle import loads
+
 class Node(models.Model):
     title = models.CharField(max_length=255)
     code = models.TextField()
@@ -17,6 +18,9 @@ class Link(models.Model):
     def __str__(self):
         return "%s->%s"%(self.src.title, self.dst.title)
     
+    def lastDumps(self):
+        return self.dumps.order_by('-created')
+    
 class LinkDump(models.Model):
     link = models.ForeignKey(Link, related_name="dumps")
     dump = models.TextField()
@@ -27,8 +31,8 @@ class LinkDump(models.Model):
     rerun_of = models.ForeignKey("LinkDump", null=True,blank=True)
     
     def loads(self):
-	if self.rerun_of:
-		return self.rerun_of.loads()
+        if self.rerun_of:
+            return self.rerun_of.loads()
         return loads(self.dump.encode('ascii'))
     
     def result(self):

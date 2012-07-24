@@ -11,7 +11,7 @@ class NodeForm(forms.Form):
 class NodeForm(ModelForm):
     class Meta:
         model = Node
-        fields = ('title','code')
+        fields = ('code',)
 """
 class PartialAuthorForm(ModelForm):
     class Meta:

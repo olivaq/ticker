@@ -21,4 +21,6 @@ urlpatterns = patterns('',
     url(r'^dump/(?P<dump_id>\d+)$', 'ticker.views.dump_view'),
     url(r'^dump/(?P<dump_id>\d+)/run$', 'ticker.views.dump_run'),
     url(r'^dump/(?P<dump_id>\d+)/status$', 'ticker.views.dump_status'),
+    url(r'^dump/(?P<dump_id>\d+)/status$', 'ticker.views.dump_status'),
+    url(r'^dump/(?P<dump_id>\d+)/focus$', 'ticker.views.dump_focus'),
 )
