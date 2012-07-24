@@ -1,0 +1,9 @@
+<table>
+<tr><td>{{dump.result.status|lower}}</td></tr>
+<tr><td>
+{% include "dicttable.html" with data=dump.loads %}
+</td></tr>
+<tr><td>{{dump.result.result}}</td></tr>
+
+<tr><td><a href="/dump/{{dump.id}}/run">Rerun</a></td></tr>
+</table>
