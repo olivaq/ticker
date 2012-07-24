@@ -97,7 +97,7 @@ def dump_run(request, dump_id):
     new.result_id = res.id
     new.save()
     
-    return redirect('/node/%d/edit/focus/%d'%(new.link.dst.id, new.id))
+    return redirect('/node/%d/edit'%(new.link.dst.id))
 
 def dump_focus(request, dump_id):
     dump = models.LinkDump.objects.get(id = dump_id)

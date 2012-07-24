@@ -1,13 +1,48 @@
-<table>
-<tr><td>{{dump.result.status|lower}}</td></tr>
-<tr><td>{% include "dicttable.html" with data=dump.loads %}</td></tr>
-<tr><td>{% if dump.result.status|lower == 'success' %}
-{% include "dicttable.html" with data=dump.result.result %}
+<h2 class="{{dump.result.status|lower}}">{{dump.result.status}}</h2>
+<div class="row dumptables">
+<div style="float:left; width:50%;">
+    <h3>Input</h3>
+    {% include "dicttable.html" with data=dump.loads %}
+</div>
+
+<div style="float:left; width:50%;">
+{% if dump.result.status|lower == 'success' %}
+    <h3>Output</h3>
+    {% include "dicttable.html" with data=dump.result.result %}
 {% elif dump.result.status|lower == 'failure' %}
-<pre>
-{{ dump.result.traceback }}
-</pre>
-{% endif %}</td></tr>
-{{dump.link_id}}
-<tr><td><a href="/dump/{{dump.id}}/run">Rerun</a></td></tr>
-</table>
+    <h3>Trace</h3>
+    <pre>
+    {{ dump.result.traceback }}
+    </pre>
+{% endif %}
+</div>
+</div>
+<style type="text/css">
+.row:after
+{
+    clear:both;
+    height:0px;
+    display:block;
+    visibility:hidden;
+    content:'.';
+}
+
+.dumptables table
+{
+    width:80%;
+    border-collapse:collapse;
+}
+
+.dumptables table tr
+{
+    border-bottom:1px solid gray;
+}
+
+.dumptables table th
+{
+    background-color:LimeGreen;
+}
+
+</style>
+
+<a href="/dump/{{dump.id}}/run">Rerun</a>

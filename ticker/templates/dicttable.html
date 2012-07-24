@@ -1,11 +1,14 @@
+{% load type %}
 <table>
         <tr>
                 <th>Key</th>
+                <th>Type</th>
                 <th>Value</th>
         </tr>
 {% for k,v in data.items %}
         <tr>
                 <td>{{k}}</td>
+                <td>{{v|type}}</td>
                 <td>{{v}}</td>
         </tr>
 {% endfor %}
