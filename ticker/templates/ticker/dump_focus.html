@@ -1,4 +1,10 @@
 <h2 class="{{dump.result.status|lower}}">{{dump.result.status}}</h2>
+{% if dump.result.status|lower == 'failure' %}
+    <h3>Trace</h3>
+    <pre>
+    {{ dump.result.traceback }}
+    </pre>
+{% endif %}
 <div class="row dumptables">
 <div style="float:left; width:50%;">
     <h3>Input</h3>
@@ -9,11 +15,6 @@
 {% if dump.result.status|lower == 'success' %}
     <h3>Output</h3>
     {% include "dicttable.html" with data=dump.result.result %}
-{% elif dump.result.status|lower == 'failure' %}
-    <h3>Trace</h3>
-    <pre>
-    {{ dump.result.traceback }}
-    </pre>
 {% endif %}
 </div>
 </div>
@@ -45,4 +46,4 @@
 
 </style>
 
-<a href="/dump/{{dump.id}}/run">Rerun</a>
+<a href="/dump/{{dump.id}}/run" class="ajaxify">Rerun</a>
